@@ -29,6 +29,7 @@ func main() {
 	cmds := command.Commands{Command_mapping: make(map[string]func(*command.State, command.Command) error)}
 	cmds.Register("login", command.HandlerLogin)
 	cmds.Register("register", command.HandlerRegister)
+	cmds.Register("reset", command.HandlerReset)
 
 	args := os.Args
 

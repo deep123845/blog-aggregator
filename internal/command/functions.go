@@ -48,6 +48,10 @@ func HandlerRegister(s *State, cmd Command) error {
 	return nil
 }
 
+func HandlerReset(s *State, _ Command) error {
+	return s.DB.Reset(context.Background())
+}
+
 func (c *Commands) Run(s *State, cmd Command) error {
 	handler, ok := c.Command_mapping[cmd.Name]
 	if !ok {
