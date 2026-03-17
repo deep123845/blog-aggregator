@@ -28,6 +28,7 @@ func main() {
 	s := command.State{Config: &cfg, DB: dbQueries}
 	cmds := command.Commands{Command_mapping: make(map[string]func(*command.State, command.Command) error)}
 	cmds.Register("login", command.HandlerLogin)
+	cmds.Register("register", command.HandlerRegister)
 
 	args := os.Args
 
