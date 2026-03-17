@@ -70,7 +70,7 @@ func HandlerUsers(s *State, _ Command) error {
 	return nil
 }
 
-func HandleAgg(_ *State, _ Command) error {
+func HandlerAgg(_ *State, _ Command) error {
 	url := "https://www.wagslane.dev/index.xml"
 
 	feed, err := rss.FetchFeed(context.Background(), url)
