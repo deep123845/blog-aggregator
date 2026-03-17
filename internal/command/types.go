@@ -2,10 +2,12 @@ package command
 
 import (
 	"github.com/deep123845/blogaggregator/internal/config"
+	"github.com/deep123845/blogaggregator/internal/database"
 )
 
 type State struct {
 	Config *config.Config
+	DB     *database.Queries
 }
 
 type Command struct {

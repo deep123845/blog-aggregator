@@ -1,11 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"os"
 
 	"github.com/deep123845/blogaggregator/internal/command"
 	"github.com/deep123845/blogaggregator/internal/config"
+	"github.com/deep123845/blogaggregator/internal/database"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -14,7 +18,14 @@ func main() {
 		log.Fatalf("error reading config: %v", err)
 	}
 
-	s := command.State{Config: &cfg}
+	db, err := sql.Open("postgres", cfg.DbURL)
+	if err != nil {
+		log.Fatalf("error opening database: %v", err)
+	}
+
+	dbQueries := database.New(db)
+
+	s := command.State{Config: &cfg, DB: dbQueries}
 	cmds := command.Commands{Command_mapping: make(map[string]func(*command.State, command.Command) error)}
 	cmds.Register("login", command.HandlerLogin)
 
