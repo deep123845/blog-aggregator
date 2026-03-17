@@ -83,6 +83,34 @@ func HandlerAgg(_ *State, _ Command) error {
 	return nil
 }
 
+func HandlerAddFeed(s *State, cmd Command) error {
+	if len(cmd.Args) != 2 {
+		return fmt.Errorf("Add Feed Command requires 2 arguments: Name, URL")
+	}
+
+	user, err := s.DB.GetUser(context.Background(), s.Config.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	newFeed := database.CreateFeedParams{
+		ID:        uuid.New(),
+		Name:      cmd.Args[0],
+		Url:       cmd.Args[1],
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+	}
+	feed, err := s.DB.CreateFeed(context.Background(), newFeed)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%+v\n", feed)
+
+	return nil
+}
+
 func (c *Commands) Run(s *State, cmd Command) error {
 	handler, ok := c.Command_mapping[cmd.Name]
 	if !ok {
