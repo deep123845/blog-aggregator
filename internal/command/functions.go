@@ -52,6 +52,23 @@ func HandlerReset(s *State, _ Command) error {
 	return s.DB.Reset(context.Background())
 }
 
+func HandlerUsers(s *State, _ Command) error {
+	users, err := s.DB.GetUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("Could not retreive users: %v", err)
+	}
+
+	for _, user := range users {
+		if user.Name == s.Config.CurrentUserName {
+			fmt.Printf("* %s (current)\n", user.Name)
+		} else {
+			fmt.Printf("* %s\n", user.Name)
+		}
+	}
+
+	return nil
+}
+
 func (c *Commands) Run(s *State, cmd Command) error {
 	handler, ok := c.Command_mapping[cmd.Name]
 	if !ok {
