@@ -111,6 +111,26 @@ func HandlerAddFeed(s *State, cmd Command) error {
 	return nil
 }
 
+func HandlerFeeds(s *State, _ Command) error {
+	feeds, err := s.DB.GetFeeds(context.Background())
+	if err != nil {
+		return err
+	}
+
+	for _, feed := range feeds {
+		user, err := s.DB.GetUserByID(context.Background(), feed.UserID)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("Name: %s\n", feed.Name)
+		fmt.Printf("URL: %s\n", feed.Url)
+		fmt.Printf("User: %s\n\n", user.Name)
+	}
+
+	return nil
+}
+
 func (c *Commands) Run(s *State, cmd Command) error {
 	handler, ok := c.Command_mapping[cmd.Name]
 	if !ok {
