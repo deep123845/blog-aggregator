@@ -223,6 +223,8 @@ func MiddlewareLoggedIn(handler func(s *State, cmd Command, user database.User) 
 	}
 }
 
+const url_error = "pq: duplicate key value violates unique constraint \"posts_url_key\" (23505)"
+
 func scrapeFeeds(s *State) error {
 	next_feed, err := s.DB.GetNextFeedToFetch(context.Background())
 	if err != nil {
@@ -242,7 +244,29 @@ func scrapeFeeds(s *State) error {
 	}
 
 	for _, item := range feed_content.Channel.Item {
-		fmt.Printf("- %s\n", item.Title)
+		pub_time, err := time.Parse("Mon, 02 Jan 2006 15:04:05 -0700", item.PubDate)
+		if err != nil {
+			return err
+		}
+
+		new_post := database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: item.Description,
+			PublishedAt: pub_time,
+			FeedID:      next_feed.ID,
+		}
+		post, err := s.DB.CreatePost(context.Background(), new_post)
+		if err != nil {
+			if err.Error() != url_error {
+				return err
+			}
+		} else {
+			fmt.Printf("%+v\n", post)
+		}
 	}
 
 	return nil
